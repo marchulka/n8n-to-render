@@ -1,29 +1,14 @@
-# Use this Blueprint to deploy n8n on Render as a web
-# service that uses a Postgres database to store
-# workflow data.
-#
-# This Blueprint uses free instance types (specified by
-# `plan`) for both the web service and the database. You
-# can upgrade to paid instance types at any time to
-# increase resources.
-
 services:
   - type: web
     plan: free
-    runtime: image
+    runtime: docker
     name: n8n-service
-    image:
-      url: docker.io/n8nio/n8n:latest
-
+    dockerfilePath: ./Dockerfile
     envVars:
-      # Генерация ключа шифрования — НЕ трогай после первого деплоя!
       - key: N8N_ENCRYPTION_KEY
         generateValue: true
-
-      # Подключение к базе Postgres на Render — правильное название ключа!
       - key: DB_TYPE
         value: postgres
-
       - key: DB_POSTGRESDB_DATABASE
         fromDatabase:
           name: n8n-db
@@ -40,22 +25,11 @@ services:
         fromDatabase:
           name: n8n-db
           property: user
-
-      # КЛЮЧЕВОЕ: укажи порт Render
-      - key: PORT
-        value: 10000 # Render сам подставит нужный порт при деплое
-      - key: N8N_PORT
-        value: ${PORT}
-
-      # Включи task runners и убери варнинг
       - key: N8N_RUNNERS_ENABLED
         value: "true"
-
-      # (необязательно, но рекомендуется для безопасности)
       - key: N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS
         value: "true"
 
 databases:
   - name: n8n-db
     plan: free
-    # diskSizeGB: 5
