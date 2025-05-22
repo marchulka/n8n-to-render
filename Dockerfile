@@ -1,2 +1,2 @@
 FROM n8nio/n8n:latest
-CMD ["n8n", "start", "--port", "$PORT"]
+CMD ["/usr/local/bin/n8n", "start", "--port", "$PORT"]
